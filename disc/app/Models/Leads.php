@@ -16,7 +16,8 @@ class Leads extends Model
      * @var array<string>
      */
     protected $fillable = [
-        'name'
+        'name',
+        'email',
     ];
 
     /**

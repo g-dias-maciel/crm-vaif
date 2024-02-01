@@ -1,14 +1,16 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
+import mask from '@alpinejs/mask';
 
 window.Alpine = Alpine;
 
 Alpine.start();
 
+Alpine.plugin(mask)
 
-$('#new_lead_btn').on('click', function(){
-    $('#lead_form_id').show();
-});
+$.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
+
+
     
 

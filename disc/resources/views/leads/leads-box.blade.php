@@ -1,11 +1,12 @@
 
 <div class="flex justify-end mt-6 mx-6 items-center">
         <div class="flex-1">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Oportunidades') }}
-            </h2>
+            <div class="form-group">
+                <x-text-input id="leads_search_id" class="block m-3 w-50%" type="text" name="search" :placeholder="__('labels.search_placeholder')" />
+                <span id="leads_list_id"></span>
+            </div>
         </div>
-        <x-primary-button id="new_lead_btn" class="mx-3">
+        <x-primary-button id="show_new_lead_btn" class="mx-3">
                 {{ __(' Nova Oportunidade') }}
         </x-primary-button>
         <x-secondary-button class="">
@@ -15,18 +16,34 @@
     <div id="lead_form_id" hidden>
         @include('leads.new-lead')
     </div>
-    <div class="p-6 text-gray-900 sm:px-6">
-        <div class="flex columns-7 text-center bg-gray-100 sm:rounded-lg p-4">
-            <div class="w-full mx-1 rounded-lg text-sky-50 bg-indigo-500">Contato Iniciado</div>
-            <div class="w-full mx-1 rounded-md text-sky-50 bg-amber-600">Resposta Pendente</div>
-            <div class="w-full mx-1 rounded-md text-sky-50 bg-gray-600">Esperando Sinal</div>
-            <div class="w-full mx-1 px-1 rounded-md text-sky-50 bg-purple-800">Tatuagem Agendada</div>
-            <div class="w-full mx-1 rounded-md text-sky-50 bg-orange-800">Reagendamento</div>
-            <div class="w-full mx-1 rounded-md text-sky-50 bg-emerald-700">Cliente Adquirido</div>
-            <div class="w-full mx-1 rounded-md text-sky-50 bg-red-600">Cliente Perdido</div>
-        </div>
-        
-</div>
-<script>
     
+<script type="module">
+    $('#show_new_lead_btn').on('click', function(){
+        $('#lead_form_id').show();
+    });
+    
+    $('#leads_search_id').on('keyup',function(){
+        var value = $(this).val();
+
+        if (value === ''){
+            $('#leads_list_id').html('');
+            return; 
+        }
+
+        $.ajax({
+            type : 'get',
+            url : "{{ route('leads.search') }}",
+            data:{'search':value},
+            success:function(data)
+            {
+                $('#leads_list_id').html(data); 
+        }
+    });
+
+    $('#leads_list_id').on('click', 'li', function(){
+        var value = $(this).text();
+        console.log(value)         
+
+    });
+})
 </script>

@@ -22,27 +22,27 @@ class LeadsController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request) : view
+    public function create(Request $request) : Response
     {
-        
+            
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
         ]);
         
        
         $leads = new Leads();
         $leads->name = $request->name;
+        $leads->email = $request->email;
         $leads->save();
 
-        $response = 'test';
+        $response = [
+            'success' => true,
+            'message' => __('messages.success_lead_created')
+        ];
 
-        redirect(route('leads.index'));
-
-        return view('leads', [
-            'status' => 'success',
-            'action' => 'create_lead',
-            'name' => $request->name
-        ]);
+        return response($response, 200)
+                ->header('Content-type', 'application/json');
     }
 
     /**
@@ -51,7 +51,8 @@ class LeadsController extends Controller
     public function store(Request $request) : RedirectResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => ['required','string','max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
         ]);
  
         $request->leads()->create($validated);
@@ -90,4 +91,33 @@ class LeadsController extends Controller
     {
         //
     }
+
+    public function search(Request $request)
+    {
+        if($request->ajax())
+        {   
+           
+            $output = '';
+            
+            $validated = $request->validate([
+                'search' => 'required|string|max:255',
+            ]);
+
+            $leads = Leads::where('name','LIKE','%'.$request->search."%")
+                        ->get();
+           
+            if (count($leads) > 0) 
+            {   
+                $output = '<ul class="list-group">';
+                foreach ($leads as $lead) {
+                    $output .= '<li class="list-group-item">' . $lead->name . '    |   ' . $lead->email . '</li>';
+                }
+                $output .= '</ul>';
+            }else{
+                $output .= '<li class="list-group-item">' . 'No results' . '</li>';
+            }
+            return Response($output);
+        }
+    }
+
 }

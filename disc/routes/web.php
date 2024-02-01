@@ -43,8 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     Route::controller(LeadsController::class)->group(function(){
+       
         
         Route::name('leads.')->group(function(){
+            Route::get('/search','search')->name('search');
             Route::get('/leads', 'index')->name('index');
             Route::post('/leads/create', 'create')->name('create');
             Route::post('/leads/store', 'store')->name('store');
